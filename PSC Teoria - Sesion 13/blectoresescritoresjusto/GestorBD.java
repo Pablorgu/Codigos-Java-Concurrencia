@@ -1,10 +1,16 @@
 package blectoresescritoresjusto;
 
+import java.util.concurrent.locks.Condition;
+
 public class GestorBD {
 
 	private int nLectores = 0;
 	private boolean hayEscritor = false;
 	private boolean quierenEntrarEscritores =false;
+	int nEscritores;
+
+	private Condicion okleer = new Condition();
+	private Condicion okEscribir = new Condition();
 
 	public synchronized void entraLector(int id) throws InterruptedException {
 
@@ -23,19 +29,18 @@ public class GestorBD {
 		System.out.println("Sale lector " + id + ", hay " + nLectores + " lectores");
 
 		if (nLectores == 0)
-			notify();
+			notifyAll();
 
 	}
 
 	public synchronized void entraEscritor(int id) throws InterruptedException {
 		printf("									Quiere entrar un escritor");
+		quierenEntrarEscritores = true;
+		nEscritores++;
 		while (nLectores > 0 || hayEscritor) {
-			quierenEntrarEscritores = true;
 			wait();
 		}
-
-		hayEscritor = true;
-
+		hayEscritor=true;
 		System.out.println("                    Entra escritor " + id);
 	}
 
@@ -43,7 +48,9 @@ public class GestorBD {
 
 		hayEscritor = false;
 		System.out.println("                    Sale escritor " + id);
-		notifyAll();
+		nEscritores--;
+		if(nEscritores>0) okEscribir.cnotify();
+		else okleer.notifyAll();
 
 	}
 
