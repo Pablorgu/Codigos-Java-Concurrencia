@@ -1,9 +1,15 @@
 package mrusa;
 
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.*;
 
 public class Coche implements Runnable {
 	private int tam;
+	private int nPasajeros = 0;
+	private Semaphore lleno = new Semaphore(0, true);
+	private Semaphore haySitio = new Semaphore(1,true);
+	private Semaphore mutex = new Semaphore(1, true);
+
 
 	public Coche(int tam) {
 		this.tam = tam;
@@ -11,12 +17,24 @@ public class Coche implements Runnable {
 
 	public void subir(int id) throws InterruptedException {
 		// id del pasajero que se sube al coche
-
+		mutex.acquire();
+		nPasajeros++;
+		if(nPasajeros=tam) {
+			lleno.release();
+		}
+		System.out.println("El pasajero" + id + " sube al coche. Hay " + numPasajeros + " pasajeros a bordo");
+		mutex.release();
 	}
 
 	public void bajar(int id) throws InterruptedException {
 		// id del pasajero que se baja del coche
-
+		mutex.acquire();
+		nPasajeros--;
+		System.out.println("El pasajero" + id + "baja del coche. Hay " + numPasajeros + " pasajeros a bordo");
+		if(nPasajeros=0){
+			haySitio.release();
+		}
+		mutex.release();
 	}
 
 	private void esperaLleno() throws InterruptedException {

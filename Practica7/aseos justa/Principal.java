@@ -18,4 +18,5 @@ public class Principal {
 			cliente[i].start();
 		}
 	}
+
 }
