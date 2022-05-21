@@ -9,6 +9,7 @@ public class Coche implements Runnable {
 	private Semaphore lleno = new Semaphore(0, true);
 	private Semaphore haySitio = new Semaphore(1,true);
 	private Semaphore mutex = new Semaphore(1, true);
+	private Semaphore finviaje = new Semaphore(0, true);
 
 
 	public Coche(int tam) {
@@ -17,21 +18,29 @@ public class Coche implements Runnable {
 
 	public void subir(int id) throws InterruptedException {
 		// id del pasajero que se sube al coche
+		haySitio.acquire();
 		mutex.acquire();
 		nPasajeros++;
-		if(nPasajeros=tam) {
+		System.out.println("El pasajero" + id + " sube al coche. Hay " + nPasajeros + " pasajeros a bordo");
+		if(nPasajeros<tam) {
+			haySitio.release();
+		}
+		if(nPasajeros==tam) {
 			lleno.release();
 		}
-		System.out.println("El pasajero" + id + " sube al coche. Hay " + numPasajeros + " pasajeros a bordo");
 		mutex.release();
 	}
 
 	public void bajar(int id) throws InterruptedException {
 		// id del pasajero que se baja del coche
+		finviaje.acquire();
 		mutex.acquire();
 		nPasajeros--;
-		System.out.println("El pasajero" + id + "baja del coche. Hay " + numPasajeros + " pasajeros a bordo");
-		if(nPasajeros=0){
+		System.out.println("El pasajero" + id + "baja del coche. Hay " + nPasajeros + " pasajeros a bordo");
+		if(nPasajeros>0) {
+			finviaje.release();
+		}
+		if(nPasajeros==0){
 			haySitio.release();
 		}
 		mutex.release();
@@ -39,8 +48,11 @@ public class Coche implements Runnable {
 
 	private void esperaLleno() throws InterruptedException {
 		// el coche espera a que este lleno para dar una vuelta
-
-	}
+		lleno.acquire();
+		System.out.println("El coche da una vuelta");
+		finviaje.release();
+		
+		}
 
 	public void run() {
 		while (true)
