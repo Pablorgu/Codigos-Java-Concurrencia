@@ -48,7 +48,7 @@ public class Cuerda {
 		if(nBabSN<3) {
 			movSN.release();
 		}
-		if(nBabSN == 3) {<
+		if(nBabSN == 3) {
 			System.out.println("Se mueve una cuerda de sur a norte");
 			turno.release();
 		}
