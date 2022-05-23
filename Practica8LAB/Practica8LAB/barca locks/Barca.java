@@ -17,25 +17,11 @@ public class Barca extends Thread {
 	 */
 
 	public synchronized void android(int id) throws InterruptedException {
-		while(!subir || pasIphone == 3 || pasAndroid==2 && pasIphone==1) {
-			wait();
-		}
-		pasAndroid++;
 		System.out.println("El android " + id + " se sube a la barca.");
-		if(pasAndroid + pasIphone==4) {
-			subir=false;
+
 			System.out.println("El barco se ha movido con " + pasAndroid + " pasajeros de Android y " + pasIphone 
 			+ " de Iphones");
-			notifyAll();
-		}
-		while(subir){
-			wait();
-		}
-		pasAndroid--;
-		if(pasAndroid + pasIphone == 0) {
-			subir=true;
-			notifyAll();
-		}
+		
 		// System.out.println("Llegamos a la orilla.");
 
 	}
@@ -51,25 +37,11 @@ public class Barca extends Thread {
 	 */
 
 	public synchronized void iphone(int id) throws InterruptedException {
-		while(!subir || pasAndroid == 3 || pasAndroid==1 && pasIphone==2) {
-			wait();
-		}
-		pasIphone++;
+	
 		System.out.println("El iphone " + id + " se sube a la barca.");
-		if(pasAndroid + pasIphone==4) {
-			subir=false;
+		
 			System.out.println("El barco se ha movido con " + pasAndroid + " pasajeros de Android y " + pasIphone 
-			+ " de Iphones");
-			notifyAll();
-		}
-		while(subir){
-			wait();
-		}
-		pasIphone--;
-		if(pasAndroid + pasIphone == 0) {
-			subir=true;
-			notifyAll();
-		}
+		
 		// System.out.println("Llegamos a la orilla.");
 
 	}
