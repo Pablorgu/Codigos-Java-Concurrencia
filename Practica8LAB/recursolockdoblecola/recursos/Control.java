@@ -1,5 +1,6 @@
 package recursos;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
@@ -8,10 +9,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Control {
 	private int NUM;// numero total de recursos
 	private int numRec;
-	List<Integer> list = new LinkedList<>();
+	private boolean hayEspera = false;
+	ArrayList<Integer> list = new ArrayList<>();
 	private ReentrantLock l = new ReentrantLock();
-	private Condition esperacola = l.newCondition();
-	private Condition primero = l.newCondition();
+	private Condition okRecurso = l.newCondition();
+	private Condition okPrimero = l.newCondition();
 	
 
 	public Control(int num) {
@@ -22,10 +24,19 @@ public class Control {
 	public void qRecursos(int id, int num) throws InterruptedException {
 		l.lock();
 		try{
-			list.add(id);
 			System.out.println("Proceso " + id + " pide " + num + " recursos. Quedan: " + numRec);
-
-		
+			list.add(id);
+			while(hayEspera) {
+				okRecurso.await();
+			}
+			hayEspera = true;
+			list.remove(1);
+			while(num > numRec) {
+				okPrimero.await();
+			}
+			hayEspera = false;
+			numRec-=num;
+			System.out.println("										El proceso " + id + " ha cogido " + num + " recursos. Quedan: " + numRec);
 		} finally {
 			l.unlock();
 		}
@@ -36,7 +47,7 @@ public class Control {
 		try{
 			numRec+= num;
 			System.out.println("El proceso " + id + " ha liberado " + num + " recursos. Recursos totales: " + numRec);
-			okRecurso.signalAll();
+			okPrimero.notify();
 		} finally {
 			l.unlock();
 		}
