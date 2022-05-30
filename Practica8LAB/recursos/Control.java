@@ -2,28 +2,47 @@ package recursos;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Control {
 	private int NUM;// numero total de recursos
 	private int numRec;
+	List<Integer> list = new LinkedList<>();
+	private ReentrantLock l = new ReentrantLock();
+	private Condition okRecurso = l.newCondition();
+	
 
 	public Control(int num) {
 		this.NUM = num;
 		this.numRec = num;
 	}
 
-	public synchronized void qRecursos(int id, int num) throws InterruptedException {
-
-		System.out.println("Proceso " + id + " pide " + num + " recursos. Quedan: " + numRec);
-
-		System.out.println("El proceso " + id + " ha cogido " + num + " recursos. Quedan: " + numRec);
-
+	public void qRecursos(int id, int num) throws InterruptedException {
+		l.lock();
+		try{
+			System.out.println("Proceso " + id + " pide " + num + " recursos. Quedan: " + numRec);
+			list.add(id);
+			while(!(list.get(0) == id && num <= numRec)){
+			okRecurso.await();
+			}
+			numRec -= num;
+			list.remove(0);
+			System.out.println("										El proceso " + id + " ha cogido " + num + " recursos. Quedan: " + numRec);
+		} finally {
+			l.unlock();
+		}
 	}
 
-	public synchronized void libRecursos(int id, int num) {
-
-		System.out.println("El proceso " + id + " ha liberado " + num + " recursos. Recursos totales: " + numRec);
-
+	public void libRecursos(int id, int num) {
+		l.lock();
+		try{
+			numRec+= num;
+			System.out.println("El proceso " + id + " ha liberado " + num + " recursos. Recursos totales: " + numRec);
+			okRecurso.signalAll();
+		} finally {
+			l.unlock();
+		}
 	}
 }
 // CS-1: un proceso tiene que esperar su turno para coger los recursos
