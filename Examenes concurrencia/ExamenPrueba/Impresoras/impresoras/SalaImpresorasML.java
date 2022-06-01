@@ -31,7 +31,7 @@ public class SalaImpresorasML implements SalaImpresoras{
             int impresoraocupada=-1;
             Cliente.add(id);
             System.out.println("Se ha añadido al cliente " + id + " a la cola de espera.");
-            while(Cliente.size() >= NI && !(Cliente.get(nClientesOcupados)!=id)) {
+            while(nClientesOcupados >= NI && !(Cliente.get(nClientesOcupados)==id)) {
                 okImpresoras.await();
             }
             nClientesOcupados++;
