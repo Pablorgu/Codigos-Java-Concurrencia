@@ -28,14 +28,14 @@ public class SalaImpresorasML implements SalaImpresoras{
     public int quieroImpresora(int id) throws InterruptedException{
         l.lock();
         try {
-            int impresoraocupada=-1;
+            int impresoraocupada= -1;
             Cliente.add(id);
             System.out.println("Se ha añadido al cliente " + id + " a la cola de espera.");
-            while(nClientesOcupados >= NI && !(Cliente.get(nClientesOcupados)==id)) {
+            while(nClientesOcupados >= NI && !(Cliente.get(nClientesOcupados-1)==id)) {
                 okImpresoras.await();
             }
             nClientesOcupados++;
-            for (int i = 0; i<NI ; i++) {
+            for (int i = 0; i<nClientesOcupados ; i++) {
                 if(impresoras.get(i)==false && impresoraocupada == -1) {
                     impresoras.set(i, true);
                     impresoraocupada = i;
@@ -52,7 +52,7 @@ public class SalaImpresorasML implements SalaImpresoras{
         l.lock();
         try{
             int poscliente=-1;
-            for(int i=0; i < NI; i++) {
+            for(int i=0; i < nClientesOcupados; i++) {
                 if (Cliente.get(i) == id){
                     poscliente=i;
                 }
