@@ -29,8 +29,11 @@ public class Barca extends Thread {
 	public void android(int id) throws InterruptedException {
 		huecolibre.acquire();
 		mutex.acquire();
-		 if(numIphone != 3 && (numAndroid ==2 && numIphone == 1)); {
+		 if(!(numIphone == 3 || (numAndroid == 2 && numIphone == 1))); {
 			entraAndroid.release();
+		}
+		if(numIphone + numAndroid < 3) {
+		huecolibre.release();
 		}
 		mutex.release();
 
@@ -47,6 +50,12 @@ public class Barca extends Thread {
 		saleAndroid.acquire();
 		mutex.acquire();
 		numAndroid--;
+		System.out.println("							El android " + id + " se baja de la barca.");
+		if(numAndroid >0) {
+			saleAndroid.release();
+		} else if(numIphone > 0) {
+			saleIphone.release();
+		}
 		if(numAndroid + numIphone == 0) {
 			huecolibre.release();
 		}
@@ -66,16 +75,18 @@ public class Barca extends Thread {
 	public void iphone(int id) throws InterruptedException {
 		huecolibre.acquire();
 		mutex.acquire();
-		 if(numAndroid != 3 && (numIphone ==2 && numAndroid == 1)); {
+		 if(!(numAndroid == 3 || (numIphone ==2 && numAndroid == 1))); {
 			entraIphone.release();
 		}
-		huecolibre.release();
+		if(numIphone + numAndroid < 3 ) {
+			huecolibre.release();
+			}
 		mutex.release();
 
 		entraIphone.acquire();
 		mutex.acquire();
 		numIphone++;
-		System.out.println("El android " + id + " se sube a la barca.");
+		System.out.println("El iphone " + id + " se sube a la barca.");
 		if(numAndroid + numIphone == 4) {
 			System.out.println("El barco ha zarpado con  " + numAndroid + " Androids y " + numIphone + " Iphones");
 			saleIphone.release();
@@ -85,6 +96,12 @@ public class Barca extends Thread {
 		saleIphone.acquire();
 		mutex.acquire();
 		numIphone--;
+		System.out.println("							El iphone " + id + " se baja de la barca.");
+		if(numAndroid >0) {
+			saleAndroid.release();
+		} else if(numIphone > 0) {
+			saleIphone.release();
+		}
 		if(numAndroid + numIphone == 0) {
 			huecolibre.release();
 		}
