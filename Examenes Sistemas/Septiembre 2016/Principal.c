@@ -39,7 +39,7 @@ int main () {
 	EliminarProceso(6,&plan);
 	EjecutarProcesos(plan);
 
-	EscribirFichero("Salida.bin",&plan);
+	EscribirFichero("Salida.txt",&plan);
 	EjecutarProcesos(plan);
 
 	return 0;

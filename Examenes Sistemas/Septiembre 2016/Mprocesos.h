@@ -9,12 +9,16 @@
 #define MPROCESOS_H_
 
 /* Defincion de tipos*/
-
+typedef struct Nodo *LProc;
+struct Nodo{
+    int id;
+    LProc sig;
+};
 
 
 void Crear(LProc *lroundrobin);
 
-void AnadirProceso(LProc lroundrobin, int idproc);
+void AnadirProceso(LProc *lroundrobin, int idproc);
 
 void EjecutarProcesos(LProc lroundrobin);
 

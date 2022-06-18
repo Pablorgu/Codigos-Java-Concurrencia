@@ -28,10 +28,13 @@ void Crear_Cola(char *nombre, TColaPrio *cp){
     } else {
         *cp=NULL;
         int num, id, prio;
-        fread(&num, sizeof(int), 1, archivo);
+        if(fread(&num, sizeof(int), 1, archivo)==0){
+            perror("Error el fichero no tiene datos");
+            exit(-1);
+        }
         for(int i = 0; i< num; i++) {
-            fread(id, sizeof(int), 1, archivo);
-            fread(prio, sizeof(int), 1, archivo);
+            fread(&id, sizeof(int), 1, archivo);
+            fread(&prio, sizeof(int), 1, archivo);
             insertar(cp,id,prio);
         }
         fclose(archivo);
@@ -40,7 +43,7 @@ void Crear_Cola(char *nombre, TColaPrio *cp){
 void Mostrar(TColaPrio cp){
     if(cp!=NULL) {
         while(cp!=NULL) {
-            printf("Puesto: %i, Id de proceso: %i, Prio de proceso: %i \n",i,cp->idProceso, cp->prioProceso);
+            printf("Id de proceso: %i, Prio de proceso: %i \n",cp->idProceso, cp->prioProceso);
             cp=cp->sig;
         }
     }
