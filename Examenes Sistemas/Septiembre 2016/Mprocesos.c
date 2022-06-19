@@ -20,57 +20,53 @@ void AnadirProceso(LProc *lroundrobin, int idproc){
 }
 
 void EjecutarProcesos(LProc lroundrobin){
-    if(lroundrobin!=NULL) {
-       LProc aux=lroundrobin;
+    if(lista!=NULL){
+    LProc aux = lista->sig;
         do{
-            lroundrobin = (lroundrobin)->sig;
-            printf("Se ha agotado el quantum del proceso %i", lroundrobin->id);
-        }while(lroundrobin->sig!= aux->sig);
+            printf("\nQuantum de proceso %i realizado", aux->id);
+            aux=aux->sig;
+        }while (aux!=lista->sig);
     } else {
-        perror("La lista esta vacia y eso me jode una barbaridad");
+        printf("La lista de procesos está vacia");
     }
 }
 
 
 void EliminarProceso(int id, LProc *lista){
     LProc aux = *lista;
-    if(aux!=NULL) {
-        aux=aux->sig;
-        LProc elim;
-            do{
-                if(aux->sig->id==id){
-                    aux->sig=elim;
-                    if(elim==lista){
-                        *lista=aux;
-                    }
-                    aux->sig=elim->sig;
-                    elim->sig=NULL;
-                    free(elim);
-                }
-                aux=aux->sig;
-            }while(aux->sig!= (*lista)->sig);
-    } else {
-        printf("La lista esta vacia y eso me jode una barbaridad");
-        exit(-1);
+    LProc Ejec;
+    int ultimo=0;
+    if(*lista!=NULL){
+        do{
+            aux=aux->sig;
+        } while(aux->sig->id!=id);
+        if(aux->sig==aux) ultimo = 1;
+        Ejec=aux->sig;
+        aux->sig=Ejec->sig;
+        if(Ejec==*lista) *lista=aux;
+        free(Ejec);
+        if(ultimo==1) *lista=NULL;
     }
 }
 
 void EscribirFichero (char * nomf, LProc *lista){
     FILE *f =fopen(nomf, "w");
-    LProc elim = *lista;
+    LProc aux = *lista;
+    if(*lista!=NULL){
     int nump=0;
     do{
         nump++;
-        elim=elim->sig;
-    }while(elim->sig!=(*lista)->sig);
-    fprintf(f, "%i",nump);
-    while((*lista)->sig!=NULL) {
-        elim=(*lista)->sig;
-        (*lista)->sig=elim->sig;
-        elim->sig==NULL;
-        fprintf(f, elim);
-        free(elim);
+        aux=aux->sig;
+    }while(aux!=*lista);
+    fprintf(f, "%i ",nump);
+    for(int i = 0; i<nump; i++){
+        fprintf(f, " %i ",aux->id);
+        EliminarProceso((*lista)->id, &(*lista));
+
     }
     fclose(f);
+    *lista=NULL;
+    }else{
+        printf("Lista vacia");
+    }
 }
-
