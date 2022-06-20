@@ -8,14 +8,18 @@
 #include "ListaJugadores.h"
 #include <stdio.h>
 
-
-
-// Lee el fichero y lo introduce en la lista
-void cargarFichero (char * nombreFich, TListaJugadores *lj)
-{
-
-	
-
+//Lee el fichero y lo introduce en la lista
+void cargarFichero (char * nombreFich, TListaJugadores *lj){
+	FILE *f= fopen("goles.bin", "rb");
+	if(f==NULL){
+		perror("Fichero erroneo");
+		exit(-1);
+	}
+	int cont[3];
+	while(fread(&cont, sizeof(unsigned int), 3, f) == 3) {
+		insertar(&(*lj), cont[1]);
+	}
+	fclose(f);
 }
 
 
@@ -25,12 +29,16 @@ int main(){
 	crear(&lj);
     unsigned int num_goles;
 	cargarFichero ("goles.bin",&lj);
+	// insertar(&lj, 2);
+	// insertar(&lj, 1);
+	// insertar(&lj, 3);
+	// insertar(&lj, 2);
 	printf("Hay un total de %d jugadores\n",longitud(lj));
 	fflush(stdout);
 
 	recorrer(lj);
 	fflush(stdout);
-	printf("Introduce un número de goles: \n");
+	printf("Introduce un nï¿½mero de goles: \n");
 	fflush(stdout);
 	scanf("%d",&num_goles);
 
@@ -41,7 +49,7 @@ int main(){
 	printf("Hay un total de %d jugadores\n",longitud(lj));
 	fflush(stdout);
 
-	printf ("El jugador que más goles ha marcado es el que tiene ID: %d",maximo(lj));
+	printf ("El jugador que mï¿½s goles ha marcado es el que tiene ID: %d",maximo(lj));
 	fflush(stdout);
 	destruir (&lj);
 

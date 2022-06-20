@@ -26,7 +26,7 @@ typedef struct userList {
 
 T_user * createUser(char *name, int uid, char *dir) ;
 T_userList createUserList() ;
-int addUser(T_userList *, T_user*) ;
+int addUser(T_userList * list, T_user* user) ;
 int getUid(T_userList list, char *userName) ;
 int deleteUser(T_userList *list, char* userName) ;
 void printUserList(T_userList list, int reverse) ;
